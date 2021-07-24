@@ -215,11 +215,7 @@ public struct SDSSupportRequestSheet: View {
     @State private var category: String = requestType[0]
     @State private var mailTitle: String = ""
     @State private var mailContent: String = ""
-//    @State private var placeholder = NSLocalizedString("please write down details", comment: "")
-//    @State private var isKeyboardVisible = false
-//
-//    @State private var showMailComposer = false
-//
+
     public init(isPresented: Binding<Bool>) {
         self._isPresented = isPresented
     }
@@ -232,7 +228,7 @@ public struct SDSSupportRequestSheet: View {
                         .tag(item)
                 }
             }
-            .padding()
+            .padding(.horizontal)
             TextField("Title", text: $mailTitle)
                 .overlay(
                     RoundedRectangle(cornerRadius: 3)
@@ -246,9 +242,10 @@ public struct SDSSupportRequestSheet: View {
                     RoundedRectangle(cornerRadius: 3)
                         .stroke(Color.gray)
                 )
-                .frame(width: 300, height: 200)
-                .padding()
-            
+                //.frame(width: 300, height: 200)
+                .frame(height: 150)
+                .padding(.horizontal)
+
             Form {
                 Text("Environemt").font(.headline)
                 //Text("mac: \(modelName)")
@@ -256,25 +253,29 @@ public struct SDSSupportRequestSheet: View {
                 Text(appNameForSend)
                 Text(appVersionForSend)
             }
-            .padding()
+            .padding(.horizontal)
             
             HStack {
-            Button(action: {
-                guard let service = NSSharingService(named: NSSharingService.Name.composeEmail) else { return }
-                service.recipients = ["smalldesksoftware@gmail.com"]
-                service.subject = String("[\(category)] \(mailTitle)")
-                service.perform(withItems: [mailContent, osName, appNameForSend, appVersionForSend])
-                isPresented.toggle()
-            }, label: {
-                Text("Send")
-            })
-            .padding()
-            Button(action: {
-                isPresented.toggle()
-            }, label: {
-                Text("Close")
-            })
-            .padding()
+                Button(action: {
+                    guard let service = NSSharingService(named: NSSharingService.Name.composeEmail) else { return }
+                    service.recipients = ["smalldesksoftware@gmail.com"]
+                    service.subject = String("[\(category)] \(mailTitle)")
+                    service.perform(withItems: [mailContent, "\n", osName, appNameForSend, appVersionForSend])
+                    if !isPresented {
+                        isPresented.toggle()
+                    }
+                }, label: {
+                    Text("Send")
+                })
+                .padding()
+                if isPresented {
+                    Button(action: {
+                        isPresented.toggle()
+                    }, label: {
+                        Text("Close")
+                    })
+                    .padding()
+                }
             }
         }
         .padding()
