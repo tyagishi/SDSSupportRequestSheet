@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+#if os(iOS)
 import MessageUI
 
 struct WrappedMFMailComposeViewController: UIViewControllerRepresentable {
@@ -49,20 +50,21 @@ struct WrappedMFMailComposeViewController: UIViewControllerRepresentable {
             self.parent = parent
         }
         func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
-            switch result {
-            case .sent:
-                print("send")
-            case .cancelled:
-                print("cancelled")
-            case .failed:
-                print("failed")
-            case .saved:
-                print("saved")
-            default:
-                print("default")
-            }
+//            switch result {
+//            case .sent:
+//                print("send")
+//            case .cancelled:
+//                print("cancelled")
+//            case .failed:
+//                print("failed")
+//            case .saved:
+//                print("saved")
+//            default:
+//                print("default")
+//            }
             parent.presentationMode.wrappedValue.dismiss()
             parent.completion?(result)
         }
     }
 }
+#endif

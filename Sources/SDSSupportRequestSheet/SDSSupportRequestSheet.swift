@@ -7,19 +7,24 @@
 
 import Foundation
 import Combine
-import MessageUI
 import SwiftUI
 
+#if canImport(MessageUI)
+import MessageUI
+#endif
+
+let requestType: [String] = [NSLocalizedString("Question", comment: ""), NSLocalizedString("Request", comment: ""),
+                             NSLocalizedString("BugReport", comment: ""), NSLocalizedString("Other", comment: "")]
+
+#if os(iOS)
 @available(iOSApplicationExtension, unavailable)
 public struct SDSSupportRequestSheet: View, KeyboardReadable {
-    let requestType: [String] = [NSLocalizedString("Question", comment: ""), NSLocalizedString("Request", comment: ""),
-                                 NSLocalizedString("BugReport", comment: ""), NSLocalizedString("Other", comment: "")]
-    @State private var selectedType: String = "Question"
+    @State private var selectedType: String = NSLocalizedString("Question", comment: "")
     
     @Binding var isPresented: Bool
     @State private var mailTitle: String = ""
     @State private var mailContent: String = ""
-    @State private var placeholder = NSLocalizedString("please write down details here", comment: "")
+    @State private var placeholder = NSLocalizedString("please write down details", comment: "")
     @State private var isKeyboardVisible = false
     
     @State private var showMailComposer = false
@@ -63,6 +68,7 @@ public struct SDSSupportRequestSheet: View, KeyboardReadable {
                                     Text(item)
                                 }
                                 .navigationBarHidden(true)
+                                .navigationBarTitle("")
                             }
                         }
                         Section(header: Text("request detail")) {
@@ -159,15 +165,7 @@ public struct SDSSupportRequestSheet: View, KeyboardReadable {
         UIDevice.current.systemVersion
     }
     
-    var appNameAsString: String {
-        let appName = Bundle.main.infoDictionary?["CFBundleName"] as? String
-        return appName ?? "UnknownApp"
-    }
-    
-    var appVersionAsString: String {
-        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
-        return appVersion ?? "0.0"
-    }
+
 }
 
 /// Publisher to read keyboard changes.
@@ -209,5 +207,102 @@ public extension UIDevice {
             return identifier + String(UnicodeScalar(UInt8(value)))
         }
         return identifier
+    }
+}
+#else // macOS
+public struct SDSSupportRequestSheet: View {
+    @Binding var isPresented: Bool
+    @State private var category: String = requestType[0]
+    @State private var mailTitle: String = ""
+    @State private var mailContent: String = ""
+//    @State private var placeholder = NSLocalizedString("please write down details", comment: "")
+//    @State private var isKeyboardVisible = false
+//
+//    @State private var showMailComposer = false
+//
+    public init(isPresented: Binding<Bool>) {
+        self._isPresented = isPresented
+    }
+    public var body: some View {
+        VStack {
+            Text("Support Request").font(.title)
+            Picker("Category", selection: $category) {
+                ForEach(requestType, id: \.self) { item in
+                    Text(item)
+                        .tag(item)
+                }
+            }
+            .padding()
+            TextField("Title", text: $mailTitle)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 3)
+                        .stroke(Color.gray)
+                )
+                .padding(.horizontal)
+            TextEditor(text: $mailContent)
+                //.textFieldStyle(RoundedBorderTextFieldStyle())
+                .textFieldStyle(SquareBorderTextFieldStyle())
+                .overlay(
+                    RoundedRectangle(cornerRadius: 3)
+                        .stroke(Color.gray)
+                )
+                .frame(width: 300, height: 200)
+                .padding()
+            
+            Form {
+                Text("Environemt").font(.headline)
+                //Text("mac: \(modelName)")
+                Text("\(osName)")
+                Text(appNameForSend)
+                Text(appVersionForSend)
+            }
+            .padding()
+            
+            HStack {
+            Button(action: {
+                guard let service = NSSharingService(named: NSSharingService.Name.composeEmail) else { return }
+                service.recipients = ["smalldesksoftware@gmail.com"]
+                service.subject = String("[\(category)] \(mailTitle)")
+                service.perform(withItems: [mailContent, osName, appNameForSend, appVersionForSend])
+                isPresented.toggle()
+            }, label: {
+                Text("Send")
+            })
+            .padding()
+            Button(action: {
+                isPresented.toggle()
+            }, label: {
+                Text("Close")
+            })
+            .padding()
+            }
+        }
+        .padding()
+    }
+    
+    var modelName: String {
+        return Host.current().name ?? "no info"
+    }
+    var osName: String {
+        return "OS    : \(ProcessInfo.processInfo.operatingSystemVersionString)"
+    }
+    var appNameForSend: String {
+        return "App   : \(appNameAsString)"
+    }
+    var appVersionForSend: String {
+        return "AppVer: \(appVersionAsString)"
+    }
+}
+#endif
+
+extension SDSSupportRequestSheet {
+    var appNameAsString: String {
+        let appName = Bundle.main.infoDictionary?["CFBundleName"] as? String
+        return appName ?? "UnknownApp"
+    }
+    
+    var appVersionAsString: String {
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+        return appVersion ?? "0.0"
     }
 }
