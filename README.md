@@ -57,7 +57,9 @@ struct ContentView: View {
 
 
 ## Installation
-Swift Package Manager: URL:
+Swift Package Manager: URL: https://github.com/tyagishi/SDSSupportRequestSheet
+
+Currently no stable version available. use main for the moment.
 
 ## Requirements
 none
