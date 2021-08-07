@@ -15,7 +15,7 @@ struct ContentView: View {
             Button(action: {
                 showSupportDialog.toggle()
             }, label: {
-                Text("Support Dialog")
+                Text("Show Support Dialog")
             })
             .padding()
         }
