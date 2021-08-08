@@ -13,18 +13,18 @@ import SwiftUI
 import MessageUI
 #endif
 
-let requestType: [String] = [NSLocalizedString("Question", comment: ""), NSLocalizedString("Request", comment: ""),
-                             NSLocalizedString("BugReport", comment: ""), NSLocalizedString("Other", comment: "")]
+let requestType: [String] = [NSLocalizedString("Question", bundle: .module, comment: ""), NSLocalizedString("Request", bundle: .module, comment: ""),
+                             NSLocalizedString("BugReport", bundle: .module, comment: ""), NSLocalizedString("Other", bundle: .module, comment: "")]
 
 #if os(iOS)
 @available(iOSApplicationExtension, unavailable)
 public struct SDSSupportRequestSheet: View, KeyboardReadable {
-    @State private var selectedType: String = NSLocalizedString("Question", comment: "")
+    @State private var selectedType: String = requestType[0]
     
     @Binding var isPresented: Bool
     @State private var mailTitle: String = ""
     @State private var mailContent: String = ""
-    @State private var placeholder = NSLocalizedString("please write down details", comment: "")
+    @State private var placeholder = NSLocalizedString("please write down details", bundle: .module, comment: "")
     @State private var isKeyboardVisible = false
     
     @State private var showMailComposer = false
@@ -48,13 +48,13 @@ public struct SDSSupportRequestSheet: View, KeyboardReadable {
                     Button(action: {
                         isPresented.toggle()
                     }, label: {
-                        Text("Cancel")
+                        Text("Cancel", bundle: .module)
                     })
                     Spacer()
                     Button(action: {
                         showMailComposer = true
                     }, label: {
-                        Text("Mail")
+                        Text("Mail", bundle: .module)
                     })
                         //.disabled(!MFMailComposeViewController.canSendMail())
                 }
@@ -62,8 +62,8 @@ public struct SDSSupportRequestSheet: View, KeyboardReadable {
                 Spacer()
                 NavigationView {
                     Form {
-                        Section(header: Text("request type")) {
-                            Picker("type", selection: $selectedType) {
+                        Section(header: Text("request type", bundle: .module)) {
+                            Picker(NSLocalizedString("type", bundle: .module, comment: ""), selection: $selectedType) {
                                 List(requestType, id:\.self) { item in
                                     Text(item)
                                 }
@@ -71,8 +71,8 @@ public struct SDSSupportRequestSheet: View, KeyboardReadable {
                                 .navigationBarTitle("")
                             }
                         }
-                        Section(header: Text("request detail")) {
-                            TextField("title", text: $mailTitle)
+                        Section(header: Text("request detail", bundle: .module)) {
+                            TextField(NSLocalizedString("title", bundle: .module, comment: ""), text: $mailTitle)
                             ZStack(alignment: .top) {
                                 TextEditor(text: $mailContent)
                                     .frame(height: 200)
@@ -86,24 +86,24 @@ public struct SDSSupportRequestSheet: View, KeyboardReadable {
                         .simultaneousGesture(tapGesture)
                         .navigationBarHidden(true)
                         if !isKeyboardVisible {
-                            Section(header: Text("environment info")) {
+                            Section(header: Text("environment info", bundle: .module)) {
                                 HStack {
-                                    Text("Device")
+                                    Text("Device", bundle: .module)
                                     Spacer()
                                     Text(deviceNameAsString)
                                 }
                                 HStack {
-                                    Text("OS")
+                                    Text("OS", bundle: .module)
                                     Spacer()
                                     Text(osVersionAsString)
                                 }
                                 HStack {
-                                    Text("App")
+                                    Text("App", bundle: .module)
                                     Spacer()
                                     Text(appNameAsString)
                                 }
                                 HStack {
-                                    Text("App Version")
+                                    Text("App Version", bundle: .module)
                                     Spacer()
                                     Text(appVersionAsString)
                                 }
@@ -127,16 +127,16 @@ public struct SDSSupportRequestSheet: View, KeyboardReadable {
                     }
                 } else {
                     Form {
-                        Text("Following will be sent")
-                        Section(header: Text("mail title")) {
+                        Text("Following will be sent", bundle: .module)
+                        Section(header: Text("mail title", bundle: .module)) {
                             Text(composeMailSubject)
                         }
-                        Section(header: Text("mail content")) {
+                        Section(header: Text("mail content", bundle: .module)) {
                             Text(composeMailBody)
                         }
                     }
                     Button(action: { showMailComposer.toggle() }, label: {
-                        Text("OK")
+                        Text("OK", bundle: .module)
                     })
                     .padding()
                 }
@@ -296,6 +296,7 @@ public struct SDSSupportRequestSheet: View {
 }
 #endif
 
+@available(iOSApplicationExtension, unavailable)
 extension SDSSupportRequestSheet {
     var appNameAsString: String {
         let appName = Bundle.main.infoDictionary?["CFBundleName"] as? String

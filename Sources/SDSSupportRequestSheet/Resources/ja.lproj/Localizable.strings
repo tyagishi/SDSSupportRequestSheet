@@ -1,0 +1,27 @@
+"Support Request" = "サポート リクエスト";
+
+"Question" = "質問";
+"Request" = "リクエスト";
+"BugReport" = "バグ報告";
+"Other" = "その他";
+
+"please write down details" = "詳細を記入ください";
+
+"request type" = "リクエスト タイプ";
+"type" = "タイプ";
+"request detail" = "リクエスト 内容";
+"title" = "タイトル";
+
+"environment info" = "動作環境情報";
+"Device" = "デバイス";
+"OS" = "OS";
+"App" = "アプリ名";
+"App Version" = "アプリ バージョン";
+
+"Cancel" = "キャンセル";
+"Mail" = "メール送信";
+
+"Following will be sent" = "Following will be sent";
+"mail title" = "mail title";
+"mail content" = "mail content";
+"OK" = "OK";

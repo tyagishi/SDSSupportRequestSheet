@@ -1,0 +1,27 @@
+"Support Request" = "Support Request";
+
+"Question" = "Question";
+"Request" = "Request";
+"BugReport" = "BugReport";
+"Other" = "Other";
+
+"please write down details" = "please write down details"
+
+"request type" = "request type";
+"type" = "type";
+"request detail" = "request detail";
+"title" = "title";
+
+"environment info" = "environment info";
+"Device" = "Device";
+"OS" = "OS";
+"App" = "App";
+"App Version" = "App Version";
+
+"Cancel" = "Cancel";
+"Mail" = "Mail";
+
+"Following will be sent" = "Following will be sent";
+"mail title" = "mail title";
+"mail content" = "mail content";
+"OK" = "OK";
