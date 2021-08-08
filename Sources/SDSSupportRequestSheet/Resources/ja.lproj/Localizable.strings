@@ -21,7 +21,7 @@
 "Cancel" = "キャンセル";
 "Mail" = "メール送信";
 
-"Following will be sent" = "Following will be sent";
-"mail title" = "mail title";
-"mail content" = "mail content";
+"Following will be sent" = "次の項目が送信されます";
+"mail title" = "メールタイトル";
+"mail content" = "メール本文";
 "OK" = "OK";

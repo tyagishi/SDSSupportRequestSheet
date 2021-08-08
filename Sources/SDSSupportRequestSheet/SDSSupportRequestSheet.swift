@@ -86,29 +86,7 @@ public struct SDSSupportRequestSheet: View, KeyboardReadable {
                         .simultaneousGesture(tapGesture)
                         .navigationBarHidden(true)
                         if !isKeyboardVisible {
-                            Section(header: Text("environment info", bundle: .module)) {
-                                HStack {
-                                    Text("Device", bundle: .module)
-                                    Spacer()
-                                    Text(deviceNameAsString)
-                                }
-                                HStack {
-                                    Text("OS", bundle: .module)
-                                    Spacer()
-                                    Text(osVersionAsString)
-                                }
-                                HStack {
-                                    Text("App", bundle: .module)
-                                    Spacer()
-                                    Text(appNameAsString)
-                                }
-                                HStack {
-                                    Text("App Version", bundle: .module)
-                                    Spacer()
-                                    Text(appVersionAsString)
-                                }
-                            }
-                            .font(.caption)
+                            environmentForm
                             .padding()
                         }
                     }
@@ -157,13 +135,7 @@ public struct SDSSupportRequestSheet: View, KeyboardReadable {
         return body
     }
     
-    var deviceNameAsString: String {
-        UIDevice.current.modelName
-    }
-    
-    var osVersionAsString: String {
-        UIDevice.current.systemVersion
-    }
+
     
 
 }
@@ -195,7 +167,6 @@ extension View {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
-#endif
 
 public extension UIDevice {
     var modelName: String {
@@ -209,6 +180,8 @@ public extension UIDevice {
         return identifier
     }
 }
+#endif
+
 #else // macOS
 public struct SDSSupportRequestSheet: View {
     @Binding var isPresented: Bool
@@ -221,15 +194,15 @@ public struct SDSSupportRequestSheet: View {
     }
     public var body: some View {
         VStack {
-            Text("Support Request").font(.title)
-            Picker("Category", selection: $category) {
+            Text("Support Request", bundle: .module).font(.title)
+            Picker(NSLocalizedString("type", bundle: .module, comment: ""), selection: $category) {
                 ForEach(requestType, id: \.self) { item in
                     Text(item)
                         .tag(item)
                 }
             }
             .padding(.horizontal)
-            TextField("Title", text: $mailTitle)
+            TextField(NSLocalizedString("title", bundle: .module, comment: ""), text: $mailTitle)
                 .overlay(
                     RoundedRectangle(cornerRadius: 3)
                         .stroke(Color.gray)
@@ -247,11 +220,7 @@ public struct SDSSupportRequestSheet: View {
                 .padding(.horizontal)
 
             Form {
-                Text("Environemt").font(.headline)
-                //Text("mac: \(modelName)")
-                Text("\(osName)")
-                Text(appNameForSend)
-                Text(appVersionForSend)
+                environmentForm
             }
             .padding(.horizontal)
             
@@ -260,19 +229,17 @@ public struct SDSSupportRequestSheet: View {
                     guard let service = NSSharingService(named: NSSharingService.Name.composeEmail) else { return }
                     service.recipients = ["smalldesksoftware@gmail.com"]
                     service.subject = String("[\(category)] \(mailTitle)")
-                    service.perform(withItems: [mailContent, "\n", osName, appNameForSend, appVersionForSend])
-                    if !isPresented {
-                        isPresented.toggle()
-                    }
+                    service.perform(withItems: [mailContent, "\n", osVersionAsString, appNameAsString, appVersionAsString])
+                    isPresented.toggle()
                 }, label: {
-                    Text("Send")
+                    Text("Mail", bundle: .module)
                 })
                 .padding()
                 if isPresented {
                     Button(action: {
                         isPresented.toggle()
                     }, label: {
-                        Text("Close")
+                        Text("Cancel", bundle: .module)
                     })
                     .padding()
                 }
@@ -280,31 +247,53 @@ public struct SDSSupportRequestSheet: View {
         }
         .padding()
     }
-    
-    var modelName: String {
-        return Host.current().name ?? "no info"
-    }
-    var osName: String {
-        return "OS    : \(ProcessInfo.processInfo.operatingSystemVersionString)"
-    }
-    var appNameForSend: String {
-        return "App   : \(appNameAsString)"
-    }
-    var appVersionForSend: String {
-        return "AppVer: \(appVersionAsString)"
-    }
 }
 #endif
 
 @available(iOSApplicationExtension, unavailable)
 extension SDSSupportRequestSheet {
-    var appNameAsString: String {
-        let appName = Bundle.main.infoDictionary?["CFBundleName"] as? String
-        return appName ?? "UnknownApp"
+    
+    var environmentForm: some View {
+        Section(header: Text("environment info", bundle: .module)) {
+                if let deviceName = deviceNameAsString {
+                    Text(deviceName)
+                }
+                Text(osVersionAsString)
+                Text(appNameAsString)
+                Text(appVersionAsString)
+        }
+        .font(.caption)
     }
     
+    var deviceNameAsString: String? {
+        var device = NSLocalizedString("Device : ", bundle: .module, comment: "")
+        #if os(macOS)
+        return nil
+        #elseif os(iOS)
+        return device.appending(UIDevice.current.modelName)
+        #else
+        return device.appending("unknown")
+        #endif
+    }
+    
+    var osVersionAsString: String {
+        var osName = NSLocalizedString("OS : ", bundle: .module, comment: "")
+        #if os(macOS)
+        return osName.appending(ProcessInfo.processInfo.operatingSystemVersionString)
+        #elseif os(iOS)
+        return osName.appending(UIDevice.current.systemVersion)
+        #else
+        return osName.appending("unknown")
+        #endif
+    }
+    
+    var appNameAsString: String {
+        let appName = (Bundle.main.infoDictionary?["CFBundleName"] as? String) ?? "UnknownApp"
+        return NSLocalizedString("App Name : ", bundle: .module, comment: "").appending(appName)
+    }
+
     var appVersionAsString: String {
-        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
-        return appVersion ?? "0.0"
+        let appVersion = (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "0.0"
+        return NSLocalizedString("App Version : ", bundle: .module, comment: "").appending(appVersion)
     }
 }
