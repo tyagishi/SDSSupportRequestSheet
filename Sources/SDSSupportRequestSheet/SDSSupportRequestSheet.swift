@@ -281,7 +281,7 @@ extension SDSSupportRequestSheet {
         #if os(macOS)
         return osName.appending(ProcessInfo.processInfo.operatingSystemVersionString)
         #elseif os(iOS)
-        return osName.appending(UIDevice.current.systemVersion)
+        return osName.appending(ProcessInfo.processInfo.operatingSystemVersionString)
         #else
         return osName.appending("unknown")
         #endif
