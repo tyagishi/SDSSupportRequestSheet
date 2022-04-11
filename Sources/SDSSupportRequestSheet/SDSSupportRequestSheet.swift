@@ -294,6 +294,7 @@ extension SDSSupportRequestSheet {
 
     var appVersionAsString: String {
         let appVersion = (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "0.0"
-        return NSLocalizedString("App Version : ", bundle: .module, comment: "").appending(appVersion)
+        let build = (Bundle.main.infoDictionary?["CFBundleVersion"] as? String) ?? "0"
+        return NSLocalizedString("App Version : ", bundle: .module, comment: "").appending(appVersion).appending(" (\(build))")
     }
 }
