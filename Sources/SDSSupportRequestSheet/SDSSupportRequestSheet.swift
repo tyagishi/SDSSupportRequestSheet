@@ -38,7 +38,7 @@ public struct SDSSupportRequestSheet: View, KeyboardReadable {
             .onEnded { _ in
                 self.hideKeyboard()
             }
-        return ZStack {
+        ZStack {
             Color.white.opacity(0.001)
                 .onTapGesture {
                     self.hideKeyboard()
@@ -70,6 +70,7 @@ public struct SDSSupportRequestSheet: View, KeyboardReadable {
                                 .navigationBarHidden(true)
                                 .navigationBarTitle("")
                             }
+                            .pickerStyle(.segmented)
                         }
                         Section(header: Text("request detail", bundle: .module)) {
                             TextField(NSLocalizedString("title", bundle: .module, comment: ""), text: $mailTitle)
