@@ -28,11 +28,14 @@ public struct SDSSupportRequestSheet: View, KeyboardReadable {
     @State private var isKeyboardVisible = false
     
     @State private var showMailComposer = false
-    
-    public init(isPresented: Binding<Bool>) {
+
+    let mailRecipients: [String]
+
+    public init(isPresented: Binding<Bool>, mailRecipients: [String] = []) {
         self._isPresented = isPresented
+        self.mailRecipients = mailRecipients
     }
-    
+
     public var body: some View {
         let tapGesture = TapGesture()
             .onEnded { _ in
@@ -96,7 +99,7 @@ public struct SDSSupportRequestSheet: View, KeyboardReadable {
             }
             .sheet(isPresented: $showMailComposer) {
                 if MFMailComposeViewController.canSendMail() {
-                    WrappedMFMailComposeViewController(mailRecipients: ["smalldesksoftware@gmail.com"],
+                    WrappedMFMailComposeViewController(mailRecipients: self.mailRecipients,
                                                        mailSubject: composeMailSubject, mailBody: composeMailBody) { result in
                         if result == .cancelled || result == .failed {
                             
@@ -189,9 +192,11 @@ public struct SDSSupportRequestSheet: View {
     @State private var category: String = requestType[0]
     @State private var mailTitle: String = ""
     @State private var mailContent: String = ""
+    let mailRecipients: [String]
 
-    public init(isPresented: Binding<Bool>) {
+    public init(isPresented: Binding<Bool>, mailRecipients: [String] = []) {
         self._isPresented = isPresented
+        self.mailRecipients = mailRecipients
     }
     public var body: some View {
         VStack {
@@ -228,7 +233,7 @@ public struct SDSSupportRequestSheet: View {
             HStack {
                 Button(action: {
                     guard let service = NSSharingService(named: NSSharingService.Name.composeEmail) else { return }
-                    service.recipients = ["smalldesksoftware@gmail.com"]
+                    service.recipients = self.mailRecipients
                     service.subject = String("[\(category)] \(mailTitle)")
                     service.perform(withItems: [mailContent, "\n", osVersionAsString, appNameAsString, appVersionAsString])
                     isPresented.toggle()
