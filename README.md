@@ -49,7 +49,8 @@ struct ContentView: View {
             .padding()
         }
         .sheet(isPresented: $showSupportDialog ) {
-            SDSSupportRequestSheet(isPresented: $showSupportDialog, mailRecipients: ["me@example.com"] )
+            SDSSupportRequestSheet(isPresented: $showSupportDialog,
+                                   mailRecipients: ["me@example.com"] )
         }
     }
 }
